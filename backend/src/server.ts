@@ -1,3 +1,4 @@
+
 //Rota = conjuto
 //Recurso= usuário[users]
 //Métodos= HTTP = GET,POST,PUT,DELETE
@@ -14,44 +15,21 @@
 //Body: http://localhost:3333/users (identificar um recurso)
 
 import express from 'express';
-import{getRepository} from 'typeorm';
-import Orphanage from './models/Orphanages'
+import path from 'path';
+
+import 'express-async-errors'
+
+
+import './database/connection';
+
+import routes from './routes';
+import errorHandler from './errors/hanndler';
 
 const app=express()
 app.use(express.json())
-
-
-app.post('/orphanages',async(request,response)=>{
-    const{
-        name,
-        latitude,
-        longitude,
-        about,
-        instructions,
-        opening_hours,
-        opening_weekends,
-
-    }=request.body;
-    
-    const orphanagesRepository= getRepository(Orphanage)
-    const orphanage = orphanagesRepository.create({
-            
-            name,
-            latitude,
-            longitude,
-            about,
-            instructions,
-            opening_hours,
-            opening_weekends,
-
-
-    });
-
-    await orphanagesRepository.save(orphanage);    
-   
-    return response.json({message:'hello modafoca2'});
-
-})
+app.use(routes)
+app.use('/uploads',express.static(path.join(__dirname,'..','uploads')))
+app.use(errorHandler)
 
 app.listen(3333);
 
